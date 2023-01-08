@@ -1,6 +1,6 @@
+import 'package:eduapp/repository/get_information.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
+
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -19,27 +19,19 @@ class _HomePageState extends State<HomePage> {
   bool isLoading = true;
 
   Future getInfo(String? country) async {
-    try{
-      isLoading = true;
-      setState(() {});
-      final url =
-      Uri.parse("http://universities.hipolabs.com/search?country=$country");
-      final res = await http.get(url);
-      if(res.statusCode==200){
-        var data = convert.jsonDecode(res.body);
-        data.forEach((e) {
-          listOfData.add( Info.convertJson(e));
-        });
-        isLoading = false;
-      }else{
-        status=res.statusCode;
-      }
+    isLoading = true;
+    setState(() {});
 
-      setState(() {});
-    }catch(s){
+    var data = GetInformationRepository.getInformation(country);
+    status= GetInformationRepository.status;
+    print(data);
+    print(status);
 
-    }
-
+    data.forEach((e) {
+      listOfData.add(Info.convertJson(e));
+    });
+    isLoading = false;
+    setState(() {});
   }
 
   @override
@@ -87,7 +79,7 @@ class _HomePageState extends State<HomePage> {
                             path: '+998933270279');
                         await url_launcher.launchUrl(launchUri,mode: LaunchMode.externalApplication);
                       },
-                      child: Text('tel'),),
+                      child: const Text('tel'),),
                 ],
               ),
             );
